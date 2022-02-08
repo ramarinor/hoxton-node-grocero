@@ -1,4 +1,21 @@
-const state = {
+type StoreItem = {
+  id: number;
+  name: string;
+  price: number;
+};
+type CartItem = {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+};
+
+type State = {
+  items: StoreItem[];
+  cart: CartItem[];
+};
+
+const state: State = {
   items: [
     {
       id: 1,
@@ -54,8 +71,8 @@ const state = {
   cart: []
 };
 
-function getFileName(item) {
-  const fileName = `${item.id
+function getFileName(item: StoreItem): string {
+  const fileName: string = `${item.id
     .toString()
     .padStart(3, "0")}-${item.name.replaceAll(" ", "-")}`;
 
@@ -64,22 +81,27 @@ function getFileName(item) {
 
 /* STATE ACTIONS */
 
-function addItemToCart(itemId) {
-  const existingItem = state.cart.find((item) => item.id == itemId);
+function addItemToCart(itemId: number): void {
+  const existingItem: CartItem | undefined = state.cart.find(
+    (item) => item.id == itemId
+  );
 
   if (existingItem) {
     existingItem.quantity += 1;
   } else {
-    const itemToAdd = state.items.find((item) => item.id == itemId);
-
-    state.cart.push({ ...itemToAdd, quantity: 1 });
+    const itemToAdd: StoreItem | undefined = state.items.find(
+      (item) => item.id == itemId
+    );
+    if (itemToAdd) state.cart.push({ ...itemToAdd, quantity: 1 });
   }
 
   renderCartItems();
 }
 
-function removeItemFromCart(itemID) {
-  const itemToUpdate = state.cart.find((item) => item.id == itemID);
+function removeItemFromCart(itemID: number): void {
+  const itemToUpdate: CartItem | undefined = state.cart.find(
+    (item) => item.id == itemID
+  );
 
   if (itemToUpdate && itemToUpdate.quantity > 1) {
     itemToUpdate.quantity -= 1;
@@ -92,9 +114,10 @@ function removeItemFromCart(itemID) {
 
 /* RENDER THE STORE */
 
-const storeItemList = document.querySelector(".store--item-list");
+const storeItemList: Element | null =
+  document.querySelector(".store--item-list");
 
-function renderStoreItem(item) {
+function renderStoreItem(item: StoreItem): void {
   const listItemEl = document.createElement("li");
 
   listItemEl.innerHTML = `
@@ -104,13 +127,12 @@ function renderStoreItem(item) {
     <button>Add to cart</button>
   `;
 
-  const addBtn = listItemEl.querySelector("button");
-  addBtn.addEventListener("click", () => addItemToCart(item.id));
-
-  storeItemList.appendChild(listItemEl);
+  const addBtn: HTMLButtonElement | null = listItemEl.querySelector("button");
+  if (addBtn) addBtn.addEventListener("click", () => addItemToCart(item.id));
+  if (storeItemList) storeItemList.appendChild(listItemEl);
 }
 
-function renderStoreItems() {
+function renderStoreItems(): void {
   state.items.forEach(renderStoreItem);
 }
 
@@ -118,10 +140,10 @@ renderStoreItems();
 
 /* RENDER THE CART */
 
-const cartItemList = document.querySelector(".cart--item-list");
+const cartItemList: Element | null = document.querySelector(".cart--item-list");
 
-function renderCartItem(item) {
-  const listItemEl = document.createElement("li");
+function renderCartItem(item: CartItem): void {
+  const listItemEl: HTMLLIElement = document.createElement("li");
 
   listItemEl.innerHTML = `
     <img class="cart--item-icon" src=${getFileName(item)} alt="${item.name}">
@@ -131,17 +153,18 @@ function renderCartItem(item) {
     <button class="quantity-btn add-btn center">+</button>
   `;
 
-  const addBtn = listItemEl.querySelector(".add-btn");
-  addBtn.addEventListener("click", (event) => addItemToCart(item.id));
+  const addBtn: Element | null = listItemEl.querySelector(".add-btn");
+  if (addBtn)
+    addBtn.addEventListener("click", () => addItemToCart(item.id));
 
-  const removeBtn = listItemEl.querySelector(".remove-btn");
-  removeBtn.addEventListener("click", (event) => removeItemFromCart(item.id));
-
-  cartItemList.appendChild(listItemEl);
+  const removeBtn: Element | null = listItemEl.querySelector(".remove-btn");
+  if (removeBtn)
+    removeBtn.addEventListener("click", () => removeItemFromCart(item.id));
+  if (cartItemList) cartItemList.appendChild(listItemEl);
 }
 
-function renderCartItems() {
-  cartItemList.innerHTML = "";
+function renderCartItems(): void {
+  if (cartItemList) cartItemList.innerHTML = "";
 
   state.cart.forEach(renderCartItem);
 
@@ -150,12 +173,11 @@ function renderCartItems() {
 
 /* RENDER THE TOTAL */
 
-const totalNumber = document.querySelector(".total-number");
+const totalNumber: Element | null = document.querySelector(".total-number");
 
-function renderTotal() {
+function renderTotal(): void {
   let total = 0;
 
   state.cart.forEach((item) => (total += item.quantity * item.price));
-
-  totalNumber.innerText = `£${total.toFixed(2)}`;
+  if (totalNumber) totalNumber.textContent = `£${total.toFixed(2)}`;
 }
