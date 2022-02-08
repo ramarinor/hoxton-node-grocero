@@ -1,20 +1,3 @@
-type StoreItem = {
-  id: number;
-  name: string;
-  price: number;
-};
-type CartItem = {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-};
-
-type State = {
-  items: StoreItem[];
-  cart: CartItem[];
-};
-
 const state: State = {
   items: [
     {
@@ -154,8 +137,7 @@ function renderCartItem(item: CartItem): void {
   `;
 
   const addBtn: Element | null = listItemEl.querySelector(".add-btn");
-  if (addBtn)
-    addBtn.addEventListener("click", () => addItemToCart(item.id));
+  if (addBtn) addBtn.addEventListener("click", () => addItemToCart(item.id));
 
   const removeBtn: Element | null = listItemEl.querySelector(".remove-btn");
   if (removeBtn)
